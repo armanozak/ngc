@@ -27,11 +27,6 @@ export function app(): express.Express {
   server.set('view engine', 'html');
   server.set('views', distFolder);
 
-  // StackBlitz workaround
-  server.get('staticblitz.com', (req, res) => {
-    res.status(404).send({ error: 'StackBlitz source files not available.' });
-  });
-
   // Example Express Rest API endpoints
   // server.get('/api/**', (req, res) => { });
   // Serve static files from /browser
