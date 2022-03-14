@@ -4,33 +4,38 @@ import {
   screen,
 } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { addTranslations, createTranslocoTestingModule } from '@/testing';
 import { HelloComponent } from './hello.component';
 import { HelloModule } from './hello.module';
 
 describe('HelloComponent', () => {
-  it('should initially render "Hello world" heading', async () => {
+  it('should initially render "Hello world" in a heading', async () => {
     await renderComponent();
 
-    const heading = getHeading(/hello\s+world/i);
+    const heading = screen.getByRole('heading', {
+      name: 'Hello world',
+      level: 1,
+    });
     expect(heading).toBeTruthy();
   });
 
-  it('should initially have an input with "Greeting Target" label', async () => {
-    await renderComponent();
+  it(`should render a label and an input for the receiver`, async () => {
+    const { getByLabelText } = await renderComponent();
 
-    const input = getInput();
+    const input = getByLabelText(/receiver/i);
     expect(input).toBeTruthy();
-    expect(input.value).toBe('world');
   });
 
-  it('should render "Hello Angular" when "Angular" is typed in the input', async () => {
+  it('should greet "Angular" when it is typed in the input', async () => {
     await renderComponent();
 
-    const input = getInput();
+    const input: HTMLInputElement = screen.getByLabelText(/receiver/i);
+    expect(input.value).toBe('world');
+
     input.setSelectionRange(0, 99);
     userEvent.type(input, '{backspace}Angular');
 
-    const heading = getHeading(/hello\s+angular/i);
+    const heading = screen.getByRole('heading', { name: /angular/i, level: 1 });
     expect(heading).toBeTruthy();
   });
 });
@@ -40,15 +45,17 @@ async function renderComponent(
 ) {
   return render(HelloComponent, {
     excludeComponentDeclaration: true,
-    imports: [HelloModule],
+    imports: [
+      HelloModule,
+      createTranslocoTestingModule(
+        addTranslations({
+          hello: {
+            _label: { receiver: 'Receiver' },
+            greeting: 'Hello {{ receiver }}',
+          },
+        })
+      ),
+    ],
     ...options,
   });
-}
-
-function getHeading(name: string | RegExp) {
-  return screen.getByRole('heading', { name, level: 1 });
-}
-
-function getInput() {
-  return screen.getByLabelText('Greeting Target') as HTMLInputElement;
 }

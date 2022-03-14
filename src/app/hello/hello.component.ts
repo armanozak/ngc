@@ -1,26 +1,31 @@
-import { Component } from '@angular/core';
+import { Component, Inject } from '@angular/core';
+import { TRANSLOCO_SCOPE } from '@ngneat/transloco';
 
 @Component({
   selector: 'app-hello',
   template: `
-    <div class="container">
+    <div class="container" *transloco="let t; read: translocoScope">
       <form>
         <mat-form-field appearance="fill">
-          <mat-label>Greeting Target</mat-label>
+          <mat-label>{{ t('_label.receiver') }}</mat-label>
           <input
             matInput
             placeholder="Eg. Angular"
-            name="target"
-            [(ngModel)]="greetingTarget"
+            name="receiver"
+            [(ngModel)]="receiver"
           />
         </mat-form-field>
       </form>
 
-      <h1>Hello {{ greetingTarget }}</h1>
+      <h1>{{ t('greeting', { receiver }) }}</h1>
     </div>
   `,
   styleUrls: ['./hello.component.scss'],
 })
 export class HelloComponent {
-  greetingTarget = 'world';
+  receiver = 'world';
+
+  constructor(
+    @Inject(TRANSLOCO_SCOPE) public readonly translocoScope: string
+  ) {}
 }
