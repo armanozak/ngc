@@ -1,5 +1,9 @@
 @use '@angular/material' as mat;
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @include mat.core();
 
 $app-primary: mat.define-palette(mat.$deep-purple-palette, 600);
